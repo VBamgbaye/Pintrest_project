@@ -28,14 +28,16 @@ def get_db_row(item: Data):
                              value_serializer=lambda x:
                              dumps(x).encode('utf-8'))
     producer.send('MyFirstKafkaTopic', data)
+
+    batch_producer = KafkaProducer(
+        bootstrap_servers="localhost:9092",
+        client_id="Pinterest data producer",
+        value_serializer=lambda batchmessage: dumps(batchmessage).encode("ascii")
+    )
+    for batchmessage in data:
+        batch_producer.send(topic="Pinterestdata", value=batchmessage)
     return item
 
-
-# TOPIC_NAME = ''
-# KAFKA_SERVER = 'localhost:9092'
-
-
-# producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER, value_serializer=json_serializer)
 
 if __name__ == '__main__':
     uvicorn.run("project_pin_API:app", host="localhost", port=8000)
