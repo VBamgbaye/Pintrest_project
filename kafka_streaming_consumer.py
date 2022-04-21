@@ -1,15 +1,30 @@
 from json import loads
-
 from kafka import KafkaConsumer
 
-TOPIC_NAME = 'MyFirstKafkaTopic'
-consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=['localhost:9092'],
-                         auto_offset_reset='earliest',
-                         enable_auto_commit=True,
-                         group_id='pin-interest',
-                         value_deserializer=lambda x: loads(x.decode('utf-8')))
-for message in consumer:
-    message = message.value
-    # collection.insert_one(message)
-    # print('{} added to {}'.format(message, collection))
-    print(message)
+
+def stream_data():
+    stream_consumer = KafkaConsumer(
+        bootstrap_servers="localhost:9092",
+        value_deserializer=lambda x: loads(x),
+        auto_offset_reset="earliest",
+        enable_auto_commit=True
+    )
+
+    stream_consumer.subscribe(topics=["Pinterestdata"])
+
+    for message in stream_consumer:
+        print(message.value)
+        #     print(message.topic)
+        #     print(message.timestamp)
+
+
+# TOPIC_NAME = 'MyFirstKafkaTopic'
+# consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=['localhost:9092'],
+#                          auto_offset_reset='earliest',
+#                          enable_auto_commit=True,
+#                          group_id='pin-interest',
+#                          value_deserializer=lambda x: loads(x.decode('utf-8')))
+
+
+if __name__ == "__main__":
+    stream_data()

@@ -34,7 +34,6 @@ def admin():
 
     # Topics to create must be passed as a list
     admin_client.create_topics(new_topics=topics)
-    admin_client.list_topics
 
 
 def simulate():

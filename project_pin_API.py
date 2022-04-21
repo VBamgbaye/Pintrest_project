@@ -24,19 +24,17 @@ class Data(BaseModel):
 @app.post("/pin/")
 def get_db_row(item: Data):
     data = dict(item)
-    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
-                             value_serializer=lambda x:
-                             dumps(x).encode('utf-8'))
-    producer.send('MyFirstKafkaTopic', data)
+    # producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+    #                          value_serializer=lambda x:
+    #                          dumps(x).encode('utf-8'))
+    # producer.send('MyFirstKafkaTopic', data)
 
     batch_producer = KafkaProducer(
         bootstrap_servers="localhost:9092",
         client_id="Pinterest data producer",
-        value_serializer=lambda batchmessage: dumps(batchmessage).encode("ascii")
+        value_serializer=lambda x: dumps(x).encode("ascii")
     )
-    for batchmessage in data:
-        batch_producer.send(topic="Pinterestdata", value=batchmessage)
-    return item
+    batch_producer.send(topic="Pinterestdata", value=data)
 
 
 if __name__ == '__main__':
