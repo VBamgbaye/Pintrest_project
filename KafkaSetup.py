@@ -30,7 +30,7 @@ def admin():
         client_id="Kafka Administrator"
     )
     # topics must be pass as a list to the create_topics method
-    topics = [NewTopic(name="Pinterestdata", num_partitions=3, replication_factor=1)]
+    topics = [NewTopic(name="Pinterest_data", num_partitions=3, replication_factor=1)]
 
     # Topics to create must be passed as a list
     admin_client.create_topics(new_topics=topics)
