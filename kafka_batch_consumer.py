@@ -1,3 +1,4 @@
+import json
 import os.path
 from json import loads
 from uuid import uuid4
@@ -21,50 +22,26 @@ def batch_consumer():
         i = 0
         while os.path.exists(f'batch_data{i}.json'):
             i += 1
-        file = open(f'batch_data{i}.json', 'w')
-        file.write(str(batch_message).replace("'", '"'))
-        file.close()
+        with open(f'batch_data{i}.json', 'w') as file:
+            json.dump(batch_message, file, indent=4)
 
 
-# def send_json_to_s3(self):
-#     i = 0
-#     while os.path.exists(f'batch_data{i}.json'):
-#         i += 1
-#         self.s3_client.upload_file(f'batch_data{i}.json', 'ai-core-bucket', f'batch_data{i}.json')
-#         print('message saved as json file and sent to s3')
-#         time.sleep(3)
-#         exit()
-#         # break
-#     # for p in range(1, 3):
-#     # os.remove(f'./api_data_file{p}')
-#     # print('all api_data file deleted')
-#     # for j, v in enumerate(self.message):
-#     #     self.output_dict[j] = v
-#     #     print(type(self.output_dict))
-#     # y = json.dumps(self.output_dict)
-#     # print(y)
-#     # out_file = open("api_data.json", "w") #encoding='utf-8')
-#     # json.dumps(dict(self.output_dict)) #cls=MyEncoder, indent=4)
-#     # #json.dumps(output_dict, default=lambda o: o._dict_, sort_keys=True, indent=4)
-#     # out_file.close()
-#     # self.s3_client.upload_file('./api_data.json', 'simeon-streaming-bucket', 'api_data')
-#
-# # out_file = open("api_data.json", "w", encoding='utf-8')
-# # json.dumps(self.output_dict, out_file, cls=MyEncoder, indent=4)
-# # #json.dumps(output_dict, default=lambda o: o._dict_, sort_keys=True, indent=4)
-# # out_file.close()
-# # self.s3_client.upload_file('./api_data.json', 'simeon-streaming-bucket', 'api_data')
-# # def delete_files(self):
-# #     for n in range(1, 100000):
-# #         os.remove(f'./api_data{n}.json')
-# #         print('all api_data files deleted')
-# def run(self):
-#     '''
-#     This function is used to run or execute all the methods.
-#     '''
-#     self.consume()
-#     # self.save_api_to_json()
-#     self.send_json_to_s3()
+def get_messages(num_messages_to_consume):
+    messages = []
+    while len(messages) < num_messages_to_consume:
+        record = next(consumer)
+        line = record.value
+        messages.append(line)
+    consumer.commit()
+    return messages
+
+
+def save_messages():
+    i = 0
+    while os.path.exists(f'batch_data{i}.json'):
+        i += 1
+    with open(f'batch_data{i}.json', 'w') as file:
+        json.dump(get_messages(10), file, indent=4)
 
 
 if __name__ == '__main__':
