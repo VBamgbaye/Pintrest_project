@@ -29,11 +29,11 @@ def batch_consumer():
     for message in consumer:
         batch_message = message.value
         i = 0
-        while os.path.exists(f'batch_data{i}.json'):
+        while os.path.exists(f'batch_data_{i}.json'):
             i += 1
-        with open(f'batch_data{i}.json', 'w') as file:
+        with open(f'batch_data_{i}.json', 'w') as file:
             json.dump(batch_message, file, indent=4)
-        boto3.client("s3").upload_file(f'batch_data{i}.json', 'ai-core-bucket', f'batch_data{i}.json')
+        boto3.client("s3").upload_file(f'batch_data_{i}.json', 'ai-core-bucket', f'batch_data_{i}.json')
         time.sleep(0.5)
     exit()
     del_local_files()
@@ -51,9 +51,9 @@ def get_messages(num_messages_to_consume):
 
 def save_messages():
     i = 0
-    while os.path.exists(f'batch_data{i}.json'):
+    while os.path.exists(f'batch_data_{i}.json'):
         i += 1
-    with open(f'batch_data{i}.json', 'w') as file:
+    with open(f'batch_data_{i}.json', 'w') as file:
         json.dump(get_messages(10), file, indent=4)
 
 
