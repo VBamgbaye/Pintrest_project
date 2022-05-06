@@ -1,8 +1,11 @@
+import glob
 import json
 import os.path
+import time
 from json import loads
 from uuid import uuid4
 
+import boto3
 from kafka import KafkaConsumer
 
 consumer = KafkaConsumer(
@@ -16,6 +19,12 @@ consumer = KafkaConsumer(
 consumer.subscribe(topics=["Pinterest_data"])
 
 
+def del_local_files():
+    files = glob.glob('*.json')
+    for file in files:
+        os.remove(file)
+
+
 def batch_consumer():
     for message in consumer:
         batch_message = message.value
@@ -24,6 +33,10 @@ def batch_consumer():
             i += 1
         with open(f'batch_data{i}.json', 'w') as file:
             json.dump(batch_message, file, indent=4)
+        boto3.client("s3").upload_file(f'batch_data{i}.json', 'ai-core-bucket', f'batch_data{i}.json')
+        time.sleep(0.5)
+    exit()
+    del_local_files()
 
 
 def get_messages(num_messages_to_consume):
