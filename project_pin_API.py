@@ -28,7 +28,7 @@ def get_db_row(item: Data):
     batch_producer = KafkaProducer(
         bootstrap_servers="localhost:9092",
         client_id="Pinterest data producer",
-        value_serializer=lambda x: dumps(x).encode("utf-8")
+        value_serializer=lambda x: dumps(x).encode("ascii")
     )
     batch_producer.send(topic="Pinterest_data", value=data)
 
